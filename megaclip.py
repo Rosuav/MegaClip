@@ -33,6 +33,7 @@ with open(CLIP_NAME + ".html", "w") as f:
 	print("""<!DOCTYPE HTML>
 <html>
 <head>
+<meta charset="utf-8">
 <style>
 main {display: flex;}
 section {display: flex; flex-direction: column;}
