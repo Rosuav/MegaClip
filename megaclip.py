@@ -47,7 +47,7 @@ section {display: flex; flex-direction: column;}
 	margin-top: 5px;
 	display: none;
 }
-#chat span {font-weight: bold;}
+#chat span:first-child {font-weight: bold;}
 </style>
 <style>
 """, file=f)
@@ -66,13 +66,16 @@ section {display: flex; flex-direction: column;}
 	for msg in chat["comments"]:
 		pos = int(msg["content_offset_seconds"] - START)
 		if pos < 0 or pos > LENGTH: continue
-		print(msg["commenter"]["display_name"] + ": " + msg["message"]["body"])
-		# TODO: Display differently if msg["message"]["is_action"] (ie if it's a /me)
-		line = '<li class="p%d"><span style="color: %s">%s</span>: ' % (
+		line = '<li class="p%d"><span style="color: %s">%s</span>' % (
 			pos,
 			msg["message"].get("user_color", "black"), # TODO: Randomize stably, the way Twitch does
 			msg["commenter"]["display_name"],
 		)
+		if msg["message"]["is_action"]:
+			line += '<span style="color: %s">' % msg["message"].get("user_color", "black")
+		else:
+			line += ": <span>"
+
 		for frag in msg["message"]["fragments"]:
 			if "emoticon" in frag:
 				line += '<img src="https://static-cdn.jtvnw.net/emoticons/v1/%s/1.0" title="%s">' % (
@@ -81,12 +84,8 @@ section {display: flex; flex-direction: column;}
 				)
 			else:
 				line += html.escape(frag["text"])
-		line += "</li>"
+		line += "</span></li>"
 		print(line, file=f)
-	"""
-<li class="p3"><span style="color: #B22222">the_frozen666</span>: this is a first time improv everyone!</li>
-<li class="p34"><span style="color: #14A503">dylanplaysguitar</span>: doing great Hannah, glad to see you singing ! <img src="https://static-cdn.jtvnw.net/emoticons/v1/1/1.0" title=":)"> you are awesome Hannah!!! <img src="https://static-cdn.jtvnw.net/emoticons/v1/1/1.0" title=":)"></li>
-	"""
 	print("""
 </ul>
 </section>
