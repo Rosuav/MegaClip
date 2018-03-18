@@ -41,10 +41,11 @@ section {display: flex; flex-direction: column;}
 	flex-basis: 0px;
 	flex-grow: 1;
 	overflow-y: auto;
+	font-family: sans-serif;
 }
 #chat li {
 	list-style: none;
-	margin-top: 5px;
+	margin-top: 10px;
 	display: none;
 }
 #chat span:first-child {font-weight: bold;}
