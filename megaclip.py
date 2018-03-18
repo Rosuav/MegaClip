@@ -96,11 +96,19 @@ section {display: flex; flex-direction: column;}
 document.querySelector("video").volume = 0.25; //hack
 
 document.querySelector("video").ontimeupdate = function() {
+	//Debugging: show the time as a number
 	document.querySelector("#time").innerHTML = this.currentTime;
-	const t = this.currentTime|0;
+
+	//Convenience: Scroll chat to the bottom only if we're already at the bottom
 	const chat = document.querySelector("#chat");
+	const autoscroll = chat.scrollTop >= chat.scrollHeight - chat.clientHeight;
+
+	//Magic: Display chat that's within the last two minutes
+	const t = this.currentTime|0;
 	chat.className = "tm" + (this.currentTime|0);
-	chat.scrollTop = chat.scrollHeight;
+
+	//Convenience part 2: do the scrolling
+	if (autoscroll) chat.scrollTop = chat.scrollHeight;
 }
 </script>
 </body>
