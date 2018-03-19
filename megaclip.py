@@ -52,8 +52,8 @@ section {display: flex; flex-direction: column;}
 </style>
 <style>
 """, file=f)
-	for t in range(LENGTH):
-		for p in range(t, min(t+120, LENGTH)):
+	for t in range(LENGTH+1):
+		for p in range(t, min(t+120, LENGTH+1)):
 			print("#chat.tm%d li.p%d {display: list-item}" % (p, t), file=f)
 	print("""</style>
 </head>
