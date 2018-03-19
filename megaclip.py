@@ -61,7 +61,7 @@ section {display: flex; flex-direction: column;}
 <h4>%s</h4>
 <main>
 <section><video src="%s.mkv" controls autoplay></video></section>
-<section id="heightlimit"><ul id="chat">
+<section><ul id="chat">
 """ % (title, CLIP_NAME), file=f)
 
 	for msg in chat["comments"]:
