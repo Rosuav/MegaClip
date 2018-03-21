@@ -3,6 +3,7 @@ import json
 import hashlib
 import html
 import os
+import subprocess
 import sys
 from pprint import pprint
 
@@ -31,6 +32,9 @@ def get_video_info(video, verbose=False):
 	r = requests.get("https://api.twitch.tv/v5/videos/%s" % video, params)
 	r.raise_for_status()
 	metadata = r.json()
+	# Grab the playlist URL and cache that too. TODO: Can we construct this from info
+	# we already have? Or at least partially, thus saving 1-2 HTTP queries?
+	metadata["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
 	comments = []
 	params["cursor"] = ""
 	while params["cursor"] is not None:
