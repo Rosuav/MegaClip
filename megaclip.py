@@ -2,31 +2,55 @@
 import json
 import html
 import os
+import sys
 from pprint import pprint
 
+CACHE_DIR = "cache"
 # TODO: Parse sys.argv
-CHAT_DIR = "../Twitch-Chat-Downloader/output"
 VIDEO_ID = 239937840
 START = 1*3600 + 48*60 + 50
 LENGTH = 225
 CLIP_NAME = "TVC plays for DeviCat"
 
-chat = None
-for channel in os.listdir(CHAT_DIR):
-	# There's a subdir with the channel name. Since we don't know the channel, search.
+# See if we have the chat already downloaded and in cache
+def get_video_info(video, verbose=False):
 	try:
-		with open(os.path.join(CHAT_DIR, channel, "v%d.json" % VIDEO_ID)) as f:
-			chat = json.load(f)
-		break
+		os.makedirs(CACHE_DIR, exist_ok=True)
+		with open(CACHE_DIR + "/%s.json" % video) as f:
+			info = json.load(f)
+			if {"metadata", "comments"} - info.keys():
+				raise ValueError("Cached JSON file is corrupt")
+			return info
 	except FileNotFoundError:
-		pass
-if chat is None:
-	# TODO: Automatically download it:
-	# cd ../Twitch-Chat-Downloader; python3 app.py -v {VIDEO_ID} -f json
-	print("Chat not found, please go get it")
-	sys.exit(1)
+		# It's not downloaded. Let's make it.
+		pass # De-chain any exceptions
+	import requests # ImportError? "python3 -m pip install requests"
+	import keys # ImportError? Look at keys_sample.py and follow the instructions.
+	params = {"client_id": keys.client_id}
+	r = requests.get("https://api.twitch.tv/v5/videos/%s" % video, params)
+	r.raise_for_status()
+	metadata = r.json()
+	comments = []
+	params["cursor"] = ""
+	while params["cursor"] is not None:
+		r = requests.get("https://api.twitch.tv/v5/videos/%s/comments" % video, params)
+		r.raise_for_status()
+		data = r.json()
+		comments.extend(data["comments"])
+		if verbose and data["comments"]:
+			pos = int(100 * data["comments"][-1]["content_offset_seconds"] / metadata["length"])
+			print("Downloading chat [%02d%%]..." % pos, end="\r", file=sys.stderr)
+		params["cursor"] = data.get("_next")
+	info = {"comments": comments, "metadata": metadata}
+	with open(CACHE_DIR + "/%s.json" % video, "w") as f:
+		json.dump(info, f)
+	if verbose:
+		print("Downloading chat - complete", file=sys.stderr)
+	return info
 
-title = chat["video"]["title"]
+info = get_video_info(VIDEO_ID, verbose=True)
+
+title = info["metadata"]["title"]
 print("Video title:", title)
 
 with open(CLIP_NAME + ".html", "w") as f:
@@ -64,7 +88,7 @@ section {display: flex; flex-direction: column;}
 <section><ul id="chat">
 """ % (title, CLIP_NAME), file=f)
 
-	for msg in chat["comments"]:
+	for msg in info["comments"]:
 		pos = int(msg["content_offset_seconds"] - START)
 		if pos < 0 or pos > LENGTH: continue
 		line = '<li class="p%d"><span style="color: %s">%s</span>' % (

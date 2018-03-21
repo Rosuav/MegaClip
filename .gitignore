@@ -1,2 +1,5 @@
 *.mkv
 *.html
+cache/
+keys.py
+*.pyc
