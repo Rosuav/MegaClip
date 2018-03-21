@@ -151,5 +151,8 @@ document.querySelector("video").ontimeupdate = function() {
 </body>
 </html>
 """, file=f)
+	# Download the actual video
+	subprocess.check_call(["ffmpeg", "-y", "-ss", str(start), "-i", info["m3u8"],
+		"-t", str(length), "-c", "copy", clipname + ".mkv"])
 
 download_video("239937840", "1:48:50", 225, "TVC plays for DeviCat")
