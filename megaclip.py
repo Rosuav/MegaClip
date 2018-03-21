@@ -49,6 +49,11 @@ def get_video_info(video, verbose=False):
 	return info
 
 def download_video(video, start, length, clipname):
+	# Parse "1:23:45" into an integer seconds
+	parts = str(start).split(":")
+	start = 0
+	for part in parts: start = (start * 60) + int(part)
+
 	info = get_video_info(video, verbose=True)
 
 	title = info["metadata"]["title"]
@@ -147,4 +152,4 @@ document.querySelector("video").ontimeupdate = function() {
 </html>
 """, file=f)
 
-download_video("239937840", 1*3600 + 48*60 + 50, 225, "TVC plays for DeviCat")
+download_video("239937840", "1:48:50", 225, "TVC plays for DeviCat")
