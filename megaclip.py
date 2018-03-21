@@ -1,5 +1,6 @@
 # Create a clip-like playable page that can exceed Twitch's 60-second limitation
 import json
+import hashlib
 import html
 import os
 import sys
@@ -91,13 +92,20 @@ section {display: flex; flex-direction: column;}
 	for msg in info["comments"]:
 		pos = int(msg["content_offset_seconds"] - START)
 		if pos < 0 or pos > LENGTH: continue
+		color = msg["message"].get("user_color")
+		if not color:
+			# Twitch randomizes, but stably. For simplicity, we don't randomize, we hash.
+			# By creating a three-digit colour (eg "#fb4"), we restrict the potential
+			# colors to a reasonable set; taking six digits would create a lot of subtle
+			# shades and wouldn't really improve things.
+			color = "#" + hashlib.md5(msg["commenter"]["name"].encode("utf-8")).hexdigest()[:3]
 		line = '<li class="p%d"><span style="color: %s">%s</span>' % (
 			pos,
-			msg["message"].get("user_color", "black"), # TODO: Randomize stably, the way Twitch does
+			color,
 			msg["commenter"]["display_name"],
 		)
 		if msg["message"]["is_action"]:
-			line += '<span style="color: %s">' % msg["message"].get("user_color", "black")
+			line += '<span style="color: %s">' % color
 		else:
 			line += ": <span>"
 
