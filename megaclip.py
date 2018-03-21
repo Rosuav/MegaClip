@@ -15,8 +15,8 @@ CLIP_NAME = "TVC plays for DeviCat"
 
 # See if we have the chat already downloaded and in cache
 def get_video_info(video, verbose=False):
+	os.makedirs(CACHE_DIR, exist_ok=True)
 	try:
-		os.makedirs(CACHE_DIR, exist_ok=True)
 		with open(CACHE_DIR + "/%s.json" % video) as f:
 			info = json.load(f)
 			if {"metadata", "comments"} - info.keys():
