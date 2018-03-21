@@ -53,13 +53,14 @@ def get_video_info(video, verbose=False):
 		print("Downloading chat - complete", file=sys.stderr)
 	return info
 
-info = get_video_info(VIDEO_ID, verbose=True)
+def download_video():
+	info = get_video_info(VIDEO_ID, verbose=True)
 
-title = info["metadata"]["title"]
-print("Video title:", title)
+	title = info["metadata"]["title"]
+	print("Video title:", title)
 
-with open(CLIP_NAME + ".html", "w") as f:
-	print("""<!DOCTYPE HTML>
+	with open(CLIP_NAME + ".html", "w") as f:
+		print("""<!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
@@ -81,10 +82,10 @@ section {display: flex; flex-direction: column;}
 </style>
 <style>
 """, file=f)
-	for t in range(LENGTH+1):
-		for p in range(t, min(t+120, LENGTH+1)):
-			print("#chat.tm%d li.p%d {display: list-item}" % (p, t), file=f)
-	print("""</style>
+		for t in range(LENGTH+1):
+			for p in range(t, min(t+120, LENGTH+1)):
+				print("#chat.tm%d li.p%d {display: list-item}" % (p, t), file=f)
+		print("""</style>
 </head>
 <body>
 <h4>%s</h4>
@@ -93,37 +94,37 @@ section {display: flex; flex-direction: column;}
 <section><ul id="chat">
 """ % (title, CLIP_NAME), file=f)
 
-	for msg in info["comments"]:
-		pos = int(msg["content_offset_seconds"] - START)
-		if pos < 0 or pos > LENGTH: continue
-		color = msg["message"].get("user_color")
-		if not color:
-			# Twitch randomizes, but stably. For simplicity, we don't randomize, we hash.
-			# By creating a three-digit colour (eg "#fb4"), we restrict the potential
-			# colors to a reasonable set; taking six digits would create a lot of subtle
-			# shades and wouldn't really improve things.
-			color = "#" + hashlib.md5(msg["commenter"]["name"].encode("utf-8")).hexdigest()[:3]
-		line = '<li class="p%d"><span style="color: %s">%s</span>' % (
-			pos,
-			color,
-			msg["commenter"]["display_name"],
-		)
-		if msg["message"]["is_action"]:
-			line += '<span style="color: %s">' % color
-		else:
-			line += ": <span>"
-
-		for frag in msg["message"]["fragments"]:
-			if "emoticon" in frag:
-				line += '<img src="https://static-cdn.jtvnw.net/emoticons/v1/%s/1.0" title="%s">' % (
-					frag["emoticon"]["emoticon_id"],
-					frag.get("text", ""), # it's probably always there but be safe anyway
-				)
+		for msg in info["comments"]:
+			pos = int(msg["content_offset_seconds"] - START)
+			if pos < 0 or pos > LENGTH: continue
+			color = msg["message"].get("user_color")
+			if not color:
+				# Twitch randomizes, but stably. For simplicity, we don't randomize, we hash.
+				# By creating a three-digit colour (eg "#fb4"), we restrict the potential
+				# colors to a reasonable set; taking six digits would create a lot of subtle
+				# shades and wouldn't really improve things.
+				color = "#" + hashlib.md5(msg["commenter"]["name"].encode("utf-8")).hexdigest()[:3]
+			line = '<li class="p%d"><span style="color: %s">%s</span>' % (
+				pos,
+				color,
+				msg["commenter"]["display_name"],
+			)
+			if msg["message"]["is_action"]:
+				line += '<span style="color: %s">' % color
 			else:
-				line += html.escape(frag["text"])
-		line += "</span></li>"
-		print(line, file=f)
-	print("""
+				line += ": <span>"
+
+			for frag in msg["message"]["fragments"]:
+				if "emoticon" in frag:
+					line += '<img src="https://static-cdn.jtvnw.net/emoticons/v1/%s/1.0" title="%s">' % (
+						frag["emoticon"]["emoticon_id"],
+						frag.get("text", ""), # it's probably always there but be safe anyway
+					)
+				else:
+					line += html.escape(frag["text"])
+			line += "</span></li>"
+			print(line, file=f)
+		print("""
 </ul>
 </section>
 </main>
@@ -150,3 +151,5 @@ document.querySelector("video").ontimeupdate = function() {
 </body>
 </html>
 """, file=f)
+
+download_video()
