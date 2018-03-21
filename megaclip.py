@@ -8,11 +8,6 @@ import sys
 from pprint import pprint
 
 CACHE_DIR = "cache"
-# TODO: Parse sys.argv
-VIDEO_ID = 239937840
-START = 1*3600 + 48*60 + 50
-LENGTH = 225
-CLIP_NAME = "TVC plays for DeviCat"
 
 # See if we have the chat already downloaded and in cache
 def get_video_info(video, verbose=False):
@@ -53,13 +48,13 @@ def get_video_info(video, verbose=False):
 		print("Downloading chat - complete", file=sys.stderr)
 	return info
 
-def download_video():
-	info = get_video_info(VIDEO_ID, verbose=True)
+def download_video(video, start, length, clipname):
+	info = get_video_info(video, verbose=True)
 
 	title = info["metadata"]["title"]
 	print("Video title:", title)
 
-	with open(CLIP_NAME + ".html", "w") as f:
+	with open(clipname + ".html", "w") as f:
 		print("""<!DOCTYPE HTML>
 <html>
 <head>
@@ -82,8 +77,8 @@ section {display: flex; flex-direction: column;}
 </style>
 <style>
 """, file=f)
-		for t in range(LENGTH+1):
-			for p in range(t, min(t+120, LENGTH+1)):
+		for t in range(length+1):
+			for p in range(t, min(t+120, length+1)):
 				print("#chat.tm%d li.p%d {display: list-item}" % (p, t), file=f)
 		print("""</style>
 </head>
@@ -92,11 +87,11 @@ section {display: flex; flex-direction: column;}
 <main>
 <section><video src="%s.mkv" controls autoplay></video></section>
 <section><ul id="chat">
-""" % (title, CLIP_NAME), file=f)
+""" % (title, clipname), file=f)
 
 		for msg in info["comments"]:
-			pos = int(msg["content_offset_seconds"] - START)
-			if pos < 0 or pos > LENGTH: continue
+			pos = int(msg["content_offset_seconds"] - start)
+			if pos < 0 or pos > length: continue
 			color = msg["message"].get("user_color")
 			if not color:
 				# Twitch randomizes, but stably. For simplicity, we don't randomize, we hash.
@@ -152,4 +147,4 @@ document.querySelector("video").ontimeupdate = function() {
 </html>
 """, file=f)
 
-download_video()
+download_video("239937840", 1*3600 + 48*60 + 50, 225, "TVC plays for DeviCat")
