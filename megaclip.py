@@ -155,4 +155,15 @@ document.querySelector("video").ontimeupdate = function() {
 	subprocess.check_call(["ffmpeg", "-y", "-ss", str(start), "-i", info["m3u8"],
 		"-t", str(length), "-c", "copy", clipname + ".mkv"])
 
-download_video("239937840", "1:48:50", 225, "TVC plays for DeviCat")
+def main(args):
+	import argparse
+	parser = argparse.ArgumentParser(description="Download clips from Twitch")
+	parser.add_argument("video", help="video ID or (TODO) URL")
+	parser.add_argument("start", help="start time [hh:]mm:ss")
+	parser.add_argument("length", type=int, help="length in seconds")
+	parser.add_argument("clipname", help="destination file name")
+	args = parser.parse_args(args)
+	download_video(**vars(args))
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
