@@ -76,17 +76,14 @@ section {display: flex; flex-direction: column;}
 #chat li {
 	list-style: none;
 	margin-top: 10px;
+}
+#chat li.hidden {
 	display: none;
 }
 #chat span:first-child {font-weight: bold;}
 </style>
-<style>
 """, file=f)
-		for t in range(length+1):
-			for p in range(t, min(t+120, length+1)):
-				print("#chat.tm%d li.p%d {display: list-item}" % (p, t), file=f)
-		print("""</style>
-</head>
+		print("""</head>
 <body>
 <h4>%s</h4>
 <main>
@@ -95,7 +92,7 @@ section {display: flex; flex-direction: column;}
 """ % (title, clipname), file=f)
 
 		for msg in info["comments"]:
-			pos = int(msg["content_offset_seconds"] - start)
+			pos = msg["content_offset_seconds"] - start
 			if pos < 0 or pos > length: continue
 			color = msg["message"].get("user_color")
 			if not color:
@@ -104,9 +101,8 @@ section {display: flex; flex-direction: column;}
 				# colors to a reasonable set; taking six digits would create a lot of subtle
 				# shades and wouldn't really improve things.
 				color = "#" + hashlib.md5(msg["commenter"]["name"].encode("utf-8")).hexdigest()[:3]
-			line = '<li class="p%d"><span style="color: %s">%s</span>' % (
-				pos,
-				color,
+			line = '<li class=hidden data-time="%.3f"><span style="color: %s">%s</span>' % (
+				pos, color,
 				msg["commenter"]["display_name"],
 			)
 			if msg["message"]["is_action"]:
@@ -141,8 +137,8 @@ document.querySelector("video").ontimeupdate = function() {
 	const autoscroll = chat.scrollTop >= chat.scrollHeight - chat.clientHeight;
 
 	//Magic: Display chat that's within the last two minutes
-	const t = this.currentTime|0;
-	chat.className = "tm" + (this.currentTime|0);
+	const t = this.currentTime;
+	document.querySelectorAll("li").forEach(li => li.classList.toggle("hidden", (t < +li.dataset.time) || (t-120 > +li.dataset.time)))
 
 	//Convenience part 2: do the scrolling
 	if (autoscroll) chat.scrollTop = chat.scrollHeight;
