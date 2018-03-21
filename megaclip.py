@@ -27,9 +27,6 @@ def get_video_info(video, verbose=False):
 	r = requests.get("https://api.twitch.tv/v5/videos/%s" % video, params)
 	r.raise_for_status()
 	metadata = r.json()
-	# Grab the playlist URL and cache that too. TODO: Can we construct this from info
-	# we already have? Or at least partially, thus saving 1-2 HTTP queries?
-	metadata["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
 	comments = []
 	params["cursor"] = ""
 	while params["cursor"] is not None:
@@ -42,6 +39,9 @@ def get_video_info(video, verbose=False):
 			print("Downloading chat [%02d%%]..." % pos, end="\r", file=sys.stderr)
 		params["cursor"] = data.get("_next")
 	info = {"comments": comments, "metadata": metadata}
+	# Grab the playlist URL and cache that too. TODO: Can we construct this from info
+	# we already have? Or at least partially, thus saving 1-2 HTTP queries?
+	info["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
 	with open(CACHE_DIR + "/%s.json" % video, "w") as f:
 		json.dump(info, f)
 	if verbose:
