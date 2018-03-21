@@ -48,7 +48,7 @@ def get_video_info(video, verbose=False):
 		print("Downloading chat - complete", file=sys.stderr)
 	return info
 
-def download_video(video, start, length, clipname):
+def download_video(video, start, length, clipname, chat_only=False):
 	# Parse "1:23:45" into an integer seconds
 	parts = str(start).split(":")
 	start = 0
@@ -152,8 +152,9 @@ document.querySelector("video").ontimeupdate = function() {
 </html>
 """, file=f)
 	# Download the actual video
-	subprocess.check_call(["ffmpeg", "-y", "-ss", str(start), "-i", info["m3u8"],
-		"-t", str(length), "-c", "copy", clipname + ".mkv"])
+	if not chat_only:
+		subprocess.check_call(["ffmpeg", "-y", "-ss", str(start), "-i", info["m3u8"],
+			"-t", str(length), "-c", "copy", clipname + ".mkv"])
 
 def main(args):
 	import argparse
@@ -162,6 +163,7 @@ def main(args):
 	parser.add_argument("start", help="start time [hh:]mm:ss")
 	parser.add_argument("length", type=int, help="length in seconds")
 	parser.add_argument("clipname", help="destination file name")
+	parser.add_argument("--chat-only", action="store_true", help="skip the downloading of the actual video")
 	args = parser.parse_args(args)
 	download_video(**vars(args))
 
