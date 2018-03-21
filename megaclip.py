@@ -77,8 +77,15 @@ section {display: flex; flex-direction: column;}
 	list-style: none;
 	margin-top: 10px;
 }
-#chat li.hidden {
-	display: none;
+.hidden {
+	display: none !important;
+}
+#morechat {
+	display: block;
+	position: relative;
+	bottom: 0;
+	background: lightgrey;
+	margin: auto;
 }
 #chat span:first-child {font-weight: bold;}
 </style>
@@ -122,6 +129,7 @@ section {display: flex; flex-direction: column;}
 			print(line, file=f)
 		print("""
 </ul>
+<a id=morechat class=hidden href="#">More chat below...</a>
 </section>
 </main>
 <div id="time"></div>
@@ -142,6 +150,14 @@ document.querySelector("video").ontimeupdate = function() {
 
 	//Convenience part 2: do the scrolling
 	if (autoscroll) chat.scrollTop = chat.scrollHeight;
+	document.querySelector("#morechat").classList.toggle("hidden", autoscroll);
+}
+
+document.querySelector("#morechat").onclick = function(ev) {
+	ev.preventDefault();
+	const chat = document.querySelector("#chat");
+	chat.scrollTop = chat.scrollHeight;
+	this.classList.add("hidden");
 }
 </script>
 </body>
