@@ -67,6 +67,9 @@ def download_video(video, start, length, clipname, chat_only=False):
 <style>
 main {display: flex;}
 section {display: flex; flex-direction: column;}
+video {
+	max-width: 75vw;
+}
 #chat {
 	flex-basis: 0px;
 	flex-grow: 1;
