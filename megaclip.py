@@ -48,12 +48,20 @@ def get_video_info(video, verbose=False):
 		print("Downloading chat - complete", file=sys.stderr)
 	return info
 
-def download_video(video, start, length, clipname, chat_only=False):
-	# Parse "1:23:45" into an integer seconds
-	parts = str(start).split(":")
-	start = 0
-	for part in parts: start = (start * 60) + int(part)
+def hms_to_sec(hms):
+	"""Parse "1:23:45" into an integer seconds"""
+	parts = str(hms).split(":")
+	sec = 0
+	for part in parts: sec = (sec * 60) + int(part)
+	return sec
 
+def download_video(video, start, length, clipname, chat_only=False):
+	start = hms_to_sec(start)
+	length = hms_to_sec(length)
+	# Length or end time? Assume that clips are likely to be short.
+	# If you take a long clip from near the beginning of the VOD,
+	# provide the end time, not the length.
+	if length > start: length -= start
 	info = get_video_info(video, verbose=True)
 
 	title = info["metadata"]["title"]
@@ -176,7 +184,7 @@ def main(args):
 	parser = argparse.ArgumentParser(description="Download clips from Twitch")
 	parser.add_argument("video", help="video ID or (TODO) URL")
 	parser.add_argument("start", help="start time [hh:]mm:ss")
-	parser.add_argument("length", type=int, help="length in seconds")
+	parser.add_argument("length", help="length in seconds or end time as [hh:]mm:ss")
 	parser.add_argument("clipname", help="destination file name")
 	parser.add_argument("--chat-only", action="store_true", help="skip the downloading of the actual video")
 	args = parser.parse_args(args)
