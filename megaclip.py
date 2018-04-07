@@ -17,6 +17,11 @@ def get_video_info(video, verbose=False):
 			info = json.load(f)
 			if {"metadata", "comments"} - info.keys():
 				raise ValueError("Cached JSON file is corrupt")
+			if info["metadata"]["status"] == "recording":
+				# TODO: Allow the cache to be used if and only if it's sufficient
+				# For now, if the video was still being recorded last time, we'll
+				# just ignore the cache.
+				raise FileNotFoundError # Pretend that the file actually didn't exist
 			return info
 	except FileNotFoundError:
 		# It's not downloaded. Let's make it.
