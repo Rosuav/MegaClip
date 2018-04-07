@@ -11,6 +11,8 @@ CACHE_DIR = "cache"
 
 # See if we have the chat already downloaded and in cache
 def get_video_info(video, verbose=False):
+	# TODO: If "video" is actually a channel name (eg "devicat"), fetch the video ID of the
+	# current or most-recent stream.
 	os.makedirs(CACHE_DIR, exist_ok=True)
 	try:
 		with open(CACHE_DIR + "/%s.json" % video) as f:
