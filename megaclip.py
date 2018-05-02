@@ -131,7 +131,7 @@ video {
 				msg["commenter"]["display_name"],
 			)
 			if msg["message"]["is_action"]:
-				line += '<span style="color: %s">' % color
+				line += '<span style="color: %s"> ' % color
 			else:
 				line += ": <span>"
 
