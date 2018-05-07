@@ -1,7 +1,14 @@
+import re
 import sys
 import megaclip
 
 def search(video, *search_terms):
+	if video == "cache":
+		import os
+		for fn in os.listdir("cache"):
+			search(fn.replace(".json", ""), *search_terms)
+		return
+
 	search_terms = [term.casefold() for term in search_terms]
 	info = megaclip.get_video_info(video, verbose=True)
 
@@ -9,6 +16,10 @@ def search(video, *search_terms):
 		for findme in search_terms:
 			if findme in msg["message"]["body"].casefold(): break
 			if findme == msg["commenter"]["name"].casefold(): break
+			if (findme == "!quote" and
+				msg["commenter"]["name"] == "cutiecakebot" and
+				re.match("#[0-9]+: ", msg["message"]["body"])):
+					break
 		else:
 			continue # Not found? Don't display it.
 		secs = int(msg["content_offset_seconds"])
