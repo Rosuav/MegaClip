@@ -10,7 +10,7 @@ from pprint import pprint
 CACHE_DIR = "cache"
 
 # See if we have the chat already downloaded and in cache
-def get_video_info(video, verbose=False):
+def get_video_info(video, *, verbose=False, cache_only=False):
 	# TODO: If "video" is actually a channel name (eg "devicat"), fetch the video ID of the
 	# current or most-recent stream.
 	os.makedirs(CACHE_DIR, exist_ok=True)
@@ -23,9 +23,10 @@ def get_video_info(video, verbose=False):
 				# TODO: Allow the cache to be used if and only if it's sufficient
 				# For now, if the video was still being recorded last time, we'll
 				# just ignore the cache.
-				raise FileNotFoundError # Pretend that the file actually didn't exist
+				if not cache_only: raise FileNotFoundError # Pretend that the file actually didn't exist
 			return info
 	except FileNotFoundError:
+		if cache_only: raise
 		# It's not downloaded. Let's make it.
 		pass # De-chain any exceptions
 	import requests # ImportError? "python3 -m pip install requests"
