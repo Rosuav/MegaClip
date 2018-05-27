@@ -2,15 +2,15 @@ import re
 import sys
 import megaclip
 
-def search(video, *search_terms):
+def search(video, *search_terms, cache_only=False):
 	if video == "cache":
 		import os
 		for fn in os.listdir("cache"):
-			search(fn.replace(".json", ""), *search_terms)
+			search(fn.replace(".json", ""), *search_terms, cache_only=True)
 		return
 
 	search_terms = [term.casefold() for term in search_terms]
-	info = megaclip.get_video_info(video, verbose=True)
+	info = megaclip.get_video_info(video, verbose=True, cache_only=cache_only)
 
 	for msg in info["comments"]:
 		for findme in search_terms:
