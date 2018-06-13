@@ -5,14 +5,35 @@ import html
 import os
 import subprocess
 import sys
+import urllib.parse
 from pprint import pprint
 
 CACHE_DIR = "cache"
 
 # See if we have the chat already downloaded and in cache
 def get_video_info(video, *, verbose=False, cache_only=False):
-	# TODO: If "video" is actually a channel name (eg "devicat"), fetch the video ID of the
-	# current or most-recent stream.
+	# If "video" is actually a channel name (eg "devicat"), fetch the video ID of the
+	# current or most-recent stream. Video IDs are either numbers (strings of decimal
+	# digits) or the letter 'v' followed by a number.
+	if isinstance(video, int):
+		# We were given an integer. Use it as-is.
+		pass
+	elif set(video[video[0] == 'v':]) <= set("1234567890"):
+		# Either a string of digits, or a video ID ("v99999999"). Intify.
+		video = int(video.strip('v'))
+	else:
+		# Probably a channel name. Let's try looking it up.
+		# We need our keys earlier for this situation. If the video ID is given
+		# and it's already in cache, we can actually skip these imports (which
+		# might fail).
+		import requests # ImportError? "python3 -m pip install requests"
+		import keys # ImportError? Look at keys_sample.py and follow the instructions.
+		r = requests.get("https://api.twitch.tv/kraken/channels/%s/videos?broadcast_type=archive&limit=1" %
+			urllib.parse.quote(video, ""), headers={"Authorization": "OAuth " + keys.oauth})
+		r.raise_for_status()
+		video = r.json()["videos"][0]["_id"][1:]
+		print("Using video %s for current/most recent" % video)
+
 	os.makedirs(CACHE_DIR, exist_ok=True)
 	try:
 		with open(CACHE_DIR + "/%s.json" % video) as f:
