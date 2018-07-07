@@ -44,9 +44,9 @@ def search(video, cache_only=False):
 			print("\t%d => %s" % (count, msg))
 
 	if one_tricks:
-		print("**************************")
+		print("\n**************************\n")
 		print(one_tricks)
-		print("**************************")
+		print("**************************\n")
 
 if __name__ == "__main__":
 	if len(sys.argv) < 2:
