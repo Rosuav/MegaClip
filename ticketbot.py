@@ -2,7 +2,7 @@ import collections
 import sys
 import megaclip
 
-def search(video, cache_only=True):
+def search(video, cache_only=False):
 	if video == "cache":
 		import os
 		for fn in os.listdir("cache"):
