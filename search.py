@@ -25,6 +25,9 @@ def search(video, *search_terms, cache_only=False):
 		secs = int(msg["content_offset_seconds"])
 		tm = "[%d:%02d:%02d]" % (secs // 3600, (secs // 60) % 60, secs % 60)
 		name = msg["commenter"]["display_name"]
+		if name.casefold() != msg["commenter"]["name"]:
+			# Probably a localized name. Worst case, we show the name twice.
+			name += " (%s)" % msg["commenter"]["name"]
 		# TODO (maybe): Colorize the name
 		if msg["message"]["is_action"]:
 			print(tm, name, msg["message"]["body"])
