@@ -12,6 +12,7 @@ def search(video, cache_only=False):
 	# People are identified by ID, but we keep the display name for, well, display
 	people = collections.defaultdict(collections.Counter)
 	displaynames = {}
+	last_message_time = {}
 	info = megaclip.get_video_info(video, verbose=True, cache_only=cache_only)
 
 	for msg in info["comments"]:
@@ -19,8 +20,10 @@ def search(video, cache_only=False):
 		# to receive gift subs...
 		people[msg["commenter"]["_id"]][msg["message"]["body"]] += 1
 		displaynames[msg["commenter"]["_id"]] = msg["commenter"]["display_name"]
+		last_message_time[msg["commenter"]["_id"]] = msg["content_offset_seconds"]
 
 	one_tricks = ""
+	now = info["comments"][-1]["content_offset_seconds"] # near enough to "now"
 
 	for person, msgs in people.items():
 		if len(msgs) > 10: continue # If you've said more than ten unique things, you're fine
@@ -28,7 +31,11 @@ def search(video, cache_only=False):
 			# You've only ever said one thing. Dubious.
 			msg, count = msgs.most_common()[0]
 			if count == 1: continue # But you only said it once. No big deal.
-			one_tricks += "%s => %d of %s\n" % (displaynames[person], count, msg)
+			ago = now - last_message_time[person]
+			if ago < 60: ago = "just now (%d seconds ago)" % ago
+			elif ago < 3600: ago = "%d minutes ago" % (ago // 60)
+			else: ago = "%d:%02d ago" % (ago // 3600, (ago // 60) % 60)
+			one_tricks += "%s => %d of %s - spoke %s\n" % (displaynames[person], count, msg, ago)
 			continue
 		# If the total unique characters in what you've said is high enough,
 		# you're probably fine. This is tricky to put a boundary on.
