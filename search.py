@@ -22,6 +22,7 @@ def search(video, *search_terms, cache_only=False):
 					break
 		else:
 			continue # Not found? Don't display it.
+		# print(video, info["metadata"]["created_at"]); break # To just show which videos have hits
 		secs = int(msg["content_offset_seconds"])
 		tm = "[%d:%02d:%02d]" % (secs // 3600, (secs // 60) % 60, secs % 60)
 		name = msg["commenter"]["display_name"]
