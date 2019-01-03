@@ -26,3 +26,18 @@ assert quotes[-1] is not None #  ... and we should have slots only for what we u
 for idx in 1, 345, 443, 484, len(quotes)-1:
 	print(idx, quotes[idx])
 print("%d/%d quotes missing" % (sum(x is None for x in quotes)-1, len(quotes)-1))
+with open("/dev/null", "w") as f: # TODO: Save to an actual file
+	missing_since = None
+	for idx, quote in enumerate(quotes):
+		if missing_since is not None:
+			if quote is None: continue
+			span = idx - missing_since
+			if span == 1:
+				print("%d <missing quote, ask CCB for it please>" % missing_since, file=f)
+			else:
+				print("%d-%d <missing these quotes, please ask CCB for them>" % (missing_since, idx - 1), file=f)
+			missing_since = None
+		if quote is None:
+			missing_since = idx
+			continue
+		print("%d: %s" % (idx, quote), file=f)
