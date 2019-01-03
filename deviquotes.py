@@ -23,6 +23,6 @@ for fn in os.listdir("cache"):
 assert quotes[0] is None # There should be no quote numbered 0
 assert quotes[-1] is not None #  ... and we should have slots only for what we use
 #pprint(quotes)
-for idx in 1, 443, 484, 345, len(quotes)-1:
+for idx in 1, 345, 443, 484, len(quotes)-1:
 	print(idx, quotes[idx])
 print("%d/%d quotes missing" % (sum(x is None for x in quotes)-1, len(quotes)-1))
