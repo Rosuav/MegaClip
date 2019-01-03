@@ -8,10 +8,15 @@ quotes = []
 try:
 	import sys
 	sys.path.append("../shed")
-	from emotify import convert_emotes
+	import emotify
 except ImportError:
 	# Can't find emotify? No probs, just don't convert them.
 	def convert_emotes(msg): return msg
+else:
+	# Activate BTTV and FFZ emotes from DeviCat's channel
+	emotify.load_bttv("devicat")
+	emotify.load_ffz("54212603")
+	from emotify import convert_emotes # More convenient to have just the function
 
 def find_quotes(video):
 	info = megaclip.get_video_info(video, cache_only=True)
