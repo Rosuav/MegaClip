@@ -60,9 +60,9 @@ command `!quote N` for some number N.
 		if missing_since:
 			span = idx - missing_since
 			if span == 1:
-				print("* %d <missing quote, ask CCB for it please>" % missing_since, file=f)
+				print("* <missing quote %d, ask CCB for it please>" % missing_since, file=f)
 			else:
-				print("* %d-%d <missing these quotes, please ask CCB for them>" % (missing_since, idx - 1), file=f)
+				print("* <missing quotes %d-%d, please ask CCB for them>" % (missing_since, idx - 1), file=f)
 			missing_since = None
 		print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
 	print("""
