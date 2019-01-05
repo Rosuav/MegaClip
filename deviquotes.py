@@ -31,7 +31,7 @@ def find_quotes(video):
 		quotes.extend([None] * (idx - len(quotes) + 1))
 		quotes[idx] = m.group(2)
 
-for fn in os.listdir("cache"):
+for fn in sorted(os.listdir("cache")):
 	find_quotes(fn.replace(".json", ""))
 
 assert quotes[0] is None # There should be no quote numbered 0
