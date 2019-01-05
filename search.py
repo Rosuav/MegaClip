@@ -2,11 +2,11 @@ import re
 import sys
 import megaclip
 
-def search(video, *search_terms, cache_only=False):
+def search(video, *search_terms, cache_only=False, show_header=False):
 	if video == "cache":
 		import os
 		for fn in os.listdir("cache"):
-			search(fn.replace(".json", ""), *search_terms, cache_only=True)
+			search(fn.replace(".json", ""), *search_terms, cache_only=True, show_header=True)
 		return
 
 	search_terms = [term.casefold() for term in search_terms]
@@ -22,7 +22,10 @@ def search(video, *search_terms, cache_only=False):
 					break
 		else:
 			continue # Not found? Don't display it.
-		# print(video, info["metadata"]["created_at"]); break # To just show which videos have hits
+		if show_header:
+			meta = info["metadata"]
+			print("%s: %s - %s playing %s - %s" % (video, meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
+			show_header = False # First time only
 		secs = int(msg["content_offset_seconds"])
 		tm = "[%d:%02d:%02d]" % (secs // 3600, (secs // 60) % 60, secs % 60)
 		name = msg["commenter"]["display_name"]
