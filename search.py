@@ -24,7 +24,7 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 			continue # Not found? Don't display it.
 		if show_header:
 			meta = info["metadata"]
-			print("%s: %s - %s playing %s - %s" % (video, meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
+			print("https://twitch.tv/videos/%s at %s\n%s playing %s - %s" % (video, meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
 			show_header = False # First time only
 		secs = int(msg["content_offset_seconds"])
 		tm = "[%d:%02d:%02d]" % (secs // 3600, (secs // 60) % 60, secs % 60)
