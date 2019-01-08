@@ -52,6 +52,7 @@ command `!quote N` for some number N.
 """ % (len(quotes)-1), file=f)
 	missing_since = 0
 	tot_missing = -1 # Ignore the shim
+	longest_span = 0, 0, 0
 	for idx, quote in enumerate(quotes):
 		if quote is None:
 			if not missing_since: missing_since = idx
@@ -59,6 +60,7 @@ command `!quote N` for some number N.
 			continue
 		if missing_since:
 			span = idx - missing_since
+			if span > longest_span[0]: longest_span = span, missing_since, idx-1
 			if span == 1:
 				print("* <missing quote %d, ask CCB for it please>" % missing_since, file=f)
 			else:
@@ -68,3 +70,4 @@ command `!quote N` for some number N.
 	print("""
 This list is missing %d quotes, plus any that have been recently added.
 """ % tot_missing, file=f)
+print("Longest span of unknown quotes is %d: %d-%d" % longest_span)
