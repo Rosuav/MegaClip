@@ -50,24 +50,15 @@ them are listed below; to see the others, ask CutieCakeBot for a quote with the
 command `!quote N` for some number N.
 
 """ % (len(quotes)-1), file=f)
-	missing_since = 0
-	tot_missing = -1 # Ignore the shim
-	longest_span = 0, 0, 0
+	missing = []
 	for idx, quote in enumerate(quotes):
 		if quote is None:
-			if not missing_since: missing_since = idx
-			tot_missing += 1
-			continue
-		if missing_since:
-			span = idx - missing_since
-			if span > longest_span[0]: longest_span = span, missing_since, idx-1
-			if span == 1:
-				print("* <missing quote %d, ask CCB for it please>" % missing_since, file=f)
-			else:
-				print("* <missing quotes %d-%d, please ask CCB for them>" % (missing_since, idx - 1), file=f)
-			missing_since = None
-		print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
+			if not idx: continue # Ignore the shim
+			missing.append(idx)
+			print("* <missing quote %d, ask CCB for it please>" % idx, file=f)
+		else:
+			print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
 	print("""
 This list is missing %d quotes, plus any that have been recently added.
-""" % tot_missing, file=f)
-print("Longest span of unknown quotes is %d: %d-%d" % longest_span)
+""" % len(missing), file=f)
+print("Missing quotes %s" % ", ".join(map(str, missing)))
