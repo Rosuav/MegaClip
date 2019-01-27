@@ -5,7 +5,7 @@ import megaclip
 def search(video, *search_terms, cache_only=False, show_header=False):
 	if video == "cache":
 		import os
-		for fn in os.listdir("cache"):
+		for fn in sorted(os.listdir("cache")):
 			search(fn.replace(".json", ""), *search_terms, cache_only=True, show_header=True)
 		return
 
@@ -24,6 +24,7 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 			continue # Not found? Don't display it.
 		if show_header:
 			meta = info["metadata"]
+			print()
 			print("https://twitch.tv/videos/%s at %s\n%s playing %s - %s" % (video, meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
 			show_header = False # First time only
 		secs = int(msg["content_offset_seconds"])
