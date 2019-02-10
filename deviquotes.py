@@ -1,6 +1,7 @@
 # Search the cache for all quotes from DeviCat and list them
 import os
 import re
+import collections
 from pprint import pprint
 import megaclip
 quotes = []
@@ -18,6 +19,7 @@ else:
 	emotify.load_ffz("54212603")
 	from emotify import convert_emotes # More convenient to have just the function
 
+popularity = collections.Counter()
 def find_quotes(video):
 	info = megaclip.get_video_info(video, cache_only=True)
 	if info["metadata"]["channel"]["name"] not in {"devicat", "devi_cat"}: return
@@ -29,7 +31,8 @@ def find_quotes(video):
 		idx = int(m.group(1))
 		if not idx: raise ValueError("Something wrong in the data for this line: %r" % msg["message"]["body"])
 		quotes.extend([None] * (idx - len(quotes) + 1))
-		quotes[idx] = m.group(2)
+		quotes[idx] = m.group(2) # If a quote changes, retain the most recent version
+		popularity[idx] += 1
 
 for fn in sorted(os.listdir("cache")):
 	find_quotes(fn.replace(".json", ""))
@@ -62,3 +65,7 @@ command `!quote N` for some number N.
 This list is missing %d quotes, plus any that have been recently added.
 """ % len(missing), file=f)
 print("Missing quotes %s" % ", ".join(map(str, missing)))
+print()
+print("Top five quotes:")
+for idx, freq in popularity.most_common(5):
+	print("%d: %s" % (idx, quotes[idx]))
