@@ -61,11 +61,12 @@ command `!quote N` for some number N.
 			print("* <missing quote %d, ask CCB for it please>" % idx, file=f)
 		else:
 			print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
-	print("""
-This list is missing %d quotes, plus any that have been recently added.
-""" % len(missing), file=f)
-print("Missing quotes %s" % ", ".join(map(str, missing)))
+	if missing: print("\nThis list is missing %d quotes, plus any that have been recently added." % len(missing), file=f)
+	else: print("\nThere may be quotes newer than these that have yet to be collected.\n", file=f)
+
+if missing: print("Missing quotes %s" % ", ".join(map(str, missing)))
+else: print("Last quote:\n%d: %s" % (len(quotes)-1, quotes[-1]))
 print()
-print("Top five quotes:")
-for idx, freq in popularity.most_common(5):
+print("Top ten quotes:")
+for idx, freq in popularity.most_common(10):
 	print("%d: %s" % (idx, quotes[idx]))
