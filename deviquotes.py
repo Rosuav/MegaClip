@@ -48,9 +48,9 @@ should not be edited manually. -->
 <style>img {display: inline-block;} li {line-height: 35px;}</style>
 
 During live streams, funny things that people say can be recorded for posterity
-by CutieCakeBot and the mod team. So far, %d quotes have been recorded. Most of
-them are listed below; to see the others, ask CutieCakeBot for a quote with the
-command `!quote N` for some number N.
+by CutieCakeBot and the mod team. So far, %d quotes have been recorded. To see
+them in chat, ask CutieCakeBot for a quote with the command `!quote N` for some
+number N.
 
 """ % (len(quotes)-1), file=f)
 	missing = []
