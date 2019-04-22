@@ -12,6 +12,7 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 	search_terms = [term.casefold() for term in search_terms]
 	info = megaclip.get_video_info(video, verbose=True, cache_only=cache_only)
 
+	status = {}
 	for msg in info["comments"]:
 		for findme in search_terms:
 			if findme in msg["message"]["body"].casefold(): break
@@ -20,6 +21,17 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 				msg["commenter"]["name"] == "cutiecakebot" and
 				re.match("#[0-9]+: ", msg["message"]["body"])):
 					break
+			if findme == "!vip":
+				badges = {b["_id"]: b for b in msg["message"].get("user_badges", ())}
+				badge = "[]"
+				if "vip" in badges: badge = "[VIP]"
+				elif "moderator" in badges: badge = "[MOD]"
+				elif "broadcaster" in badges: badge = "[B/C]"
+				who = msg["commenter"]["name"].casefold()
+				if badge != status.get(who):
+					status[who] = badge
+					print(msg["commenter"]["display_name"], badge)
+				continue
 		else:
 			continue # Not found? Don't display it.
 		if show_header:
