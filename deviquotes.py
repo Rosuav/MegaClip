@@ -40,6 +40,11 @@ for fn in sorted(os.listdir("cache")):
 assert quotes[0] is None # There should be no quote numbered 0
 assert quotes[-1] is not None #  ... and we should have slots only for what we use
 
+most_quoted = collections.Counter()
+name_fold = {} # Map case-folded names to the first seen form; whatever we first see, we keep.
+name_fold["devi_cat"] = "DeviCat" # Fold some names together to gather renamed people
+for Erin in "derppicklejar dearpicklejar pickle pickledeggrin".split():
+	name_fold[Erin] = "Erin (various)"
 with open("../devicatoutlet.github.io/quotes.md", "w") as f:
 	print("""# Twitch Quotes
 
@@ -61,6 +66,8 @@ number N.
 			print("* <missing quote %d, ask CCB for it please>" % idx, file=f)
 		else:
 			print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
+			m = re.search(r"-(\w+) \([0-9][0-9]-[A-Z][a-z][a-z]-[0-9][0-9]\)$", quote)
+			if m: most_quoted[name_fold.setdefault(m.group(1).casefold(), m.group(1))] += 1
 	if missing: print("\nThis list is missing %d quotes, plus any that have been recently added." % len(missing), file=f)
 	else: print("\nThere may be quotes newer than these that have yet to be collected.\n", file=f)
 
@@ -70,3 +77,7 @@ print()
 print("Top ten quotes:")
 for idx, freq in popularity.most_common(10):
 	print("%d: %s" % (idx, quotes[idx]))
+print()
+print("Most quoted people:")
+for name, freq in most_quoted.most_common(10):
+	print("%d: %s" % (freq, name))
