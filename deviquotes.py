@@ -20,14 +20,17 @@ else:
 	from emotify import convert_emotes # More convenient to have just the function
 
 popularity = collections.Counter()
+cache = {}
 def find_quotes(video):
 	info = megaclip.get_video_info(video, cache_only=True)
 	if info["metadata"]["channel"]["name"] not in {"devicat", "devi_cat"}: return
-	if info["metadata"]["status"] == "recording":
+	if "quotes" not in cache and info["metadata"]["status"] == "recording":
 		# TODO: Retain cache of everything up to but not including any
 		# incomplete videos. Then next time, load that cache and skip
 		# everything up to but not including the cache marker.
-		pass
+		cache["cached_until"] = video
+		cache["popularity"] = dict(popularity)
+		cache["quotes"] = quotes[:]
 	print("Scanning video %s..." % video)
 	for msg in info["comments"]:
 		if msg["commenter"]["name"] != "cutiecakebot": continue
