@@ -1,10 +1,10 @@
 # Search the cache for all quotes from DeviCat and list them
 import os
 import re
+import json
 import collections
 from pprint import pprint
 import megaclip
-quotes = []
 
 try:
 	import sys
@@ -19,21 +19,32 @@ else:
 	emotify.load_ffz("54212603")
 	from emotify import convert_emotes # More convenient to have just the function
 
+CACHE_FILE = "../devicatoutlet.github.io/_quotes.json"
+try:
+	with open(CACHE_FILE) as f: cache = json.load(f)
+except (FileNotFoundError, json.decoder.JSONDecodeError): cache = {}
+quotes = cache.get("quotes", [])
+def cache_end(video):
+	if "saved" in cache: return # Ensure we save back only once
+	with open(CACHE_FILE, "w") as f:
+		json.dump({"cached_until": video, "quotes": quotes}, f, sort_keys=True, indent=2)
+		f.write("\n") # json.dump doesn't put a final newline, but it's tidier with one
+	cache["saved"] = 1
+
 popularity = collections.Counter()
-cache = {}
 def find_quotes(video):
+	if "cached_until" in cache and video < cache["cached_until"]: return
 	info = megaclip.get_video_info(video, cache_only=True)
 	if info["metadata"]["channel"]["name"] not in {"devicat", "devi_cat"}: return
-	if "quotes" not in cache and info["metadata"]["status"] == "recording":
-		# TODO: Retain cache of everything up to but not including any
+	if info["metadata"]["status"] == "recording":
+		# Retain cache of everything up to but not including any
 		# incomplete videos. Then next time, load that cache and skip
 		# everything up to but not including the cache marker.
 		# Note that the popularity stats are not cached. Keeping the
 		# cache file and discarding the actual chat logs will reset
 		# all quotes to zero and restart the popularity contest.
-		cache["cached_until"] = video
-		cache["quotes"] = quotes[:]
-	print("Scanning video %s..." % video)
+		cache_end(video)
+	print("Scanning video %s (%s)..." % (video, info["metadata"]["status"]))
 	for msg in info["comments"]:
 		if msg["commenter"]["name"] != "cutiecakebot": continue
 		m = re.match("#([0-9]+): (.*)$", msg["message"]["body"])
@@ -46,6 +57,7 @@ def find_quotes(video):
 
 for fn in sorted(os.listdir("cache")):
 	find_quotes(fn.replace(".json", ""))
+cache_end(fn.replace(".json", "") + "+") # If we haven't halted the cache, keep everything, and start scanning AFTER the last vid.
 
 assert quotes[0] is None # There should be no quote numbered 0
 assert quotes[-1] is not None #  ... and we should have slots only for what we use
