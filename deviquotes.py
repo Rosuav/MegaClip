@@ -28,8 +28,10 @@ def find_quotes(video):
 		# TODO: Retain cache of everything up to but not including any
 		# incomplete videos. Then next time, load that cache and skip
 		# everything up to but not including the cache marker.
+		# Note that the popularity stats are not cached. Keeping the
+		# cache file and discarding the actual chat logs will reset
+		# all quotes to zero and restart the popularity contest.
 		cache["cached_until"] = video
-		cache["popularity"] = dict(popularity)
 		cache["quotes"] = quotes[:]
 	print("Scanning video %s..." % video)
 	for msg in info["comments"]:
