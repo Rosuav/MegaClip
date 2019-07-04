@@ -65,7 +65,7 @@ assert quotes[-1] is not None #  ... and we should have slots only for what we u
 most_quoted = collections.Counter()
 name_fold = {} # Map case-folded names to the first seen form; whatever we first see, we keep.
 name_fold["devi_cat"] = "DeviCat" # Fold some names together to gather renamed people
-for Erin in "derppicklejar dearpicklejar pickle pickledeggrin".split():
+for Erin in "derppicklejar dearpicklejar pickle pickledeggrin picklewash mydearestpickle".split():
 	name_fold[Erin] = "Erin (various)"
 with open("../devicatoutlet.github.io/quotes.md", "w") as f:
 	print("""# Twitch Quotes
