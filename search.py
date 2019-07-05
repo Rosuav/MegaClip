@@ -3,14 +3,22 @@ import sys
 import megaclip
 
 def search(video, *search_terms, cache_only=False, show_header=False):
-	if video == "cache":
-		import os
-		for fn in sorted(os.listdir("cache")):
-			search(fn.replace(".json", ""), *search_terms, cache_only=True, show_header=True)
-		return
+	if isinstance(video, str):
+		# Cache lookup - recurse for every cached entry
+		if video.startswith("cache"):
+			video = video.casefold()
+			import os
+			for fn in sorted(os.listdir("cache")):
+				info = megaclip.get_video_info(fn.replace(".json", ""), verbose=True, cache_only=True)
+				if video in ("cache", "cache:" + info["metadata"]["channel"]["name"]):
+					search(info, *search_terms, show_header=True)
+			return
+		# Otherwise just go fetch, assuming it's some valid identifier (video ID, channel name, etc)
+		info = megaclip.get_video_info(video, verbose=True, cache_only=cache_only)
+	else:
+		info = video
 
 	search_terms = [term.casefold() for term in search_terms]
-	info = megaclip.get_video_info(video, verbose=True, cache_only=cache_only)
 
 	status = {}
 	for msg in info["comments"]:
@@ -37,7 +45,7 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 		if show_header:
 			meta = info["metadata"]
 			print()
-			print("https://twitch.tv/videos/%s at %s\n%s playing %s - %s" % (video, meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
+			print("%s at %s\n%s playing %s - %s" % (meta["url"], meta["created_at"], meta["channel"]["display_name"], meta["game"], meta["title"]))
 			show_header = False # First time only
 		secs = int(msg["content_offset_seconds"])
 		tm = "[%d:%02d:%02d]" % (secs // 3600, (secs // 60) % 60, secs % 60)
