@@ -46,7 +46,7 @@ def find_quotes(video):
 		cache_end(video)
 	print("Scanning video %s (%s)..." % (video, info["metadata"]["status"]))
 	for msg in info["comments"]:
-		if msg["commenter"]["name"] != "cutiecakebot": continue
+		if msg["commenter"]["name"] not in ("cutiecakebot", "candicat"): continue
 		m = re.match("#([0-9]+): (.*)$", msg["message"]["body"])
 		if not m: continue
 		idx = int(m.group(1))
@@ -75,8 +75,8 @@ should not be edited manually. -->
 <style>img {display: inline-block;} li {line-height: 35px;}</style>
 
 During live streams, funny things that people say can be recorded for posterity
-by CutieCakeBot and the mod team. So far, %d quotes have been recorded. To see
-them in chat, ask CutieCakeBot for a quote with the command `!quote N` for some
+by the faithful bot and the mod team. So far, %d quotes have been recorded. To
+see them in chat, ask the bot for a quote with the command `!quote N` for some
 number N.
 
 """ % (len(quotes)-1), file=f)
