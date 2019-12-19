@@ -86,7 +86,7 @@ number N.
 		if quote is None:
 			if not idx: continue # Ignore the shim
 			missing.append(idx)
-			print("* <missing quote %d, ask CCB for it please>" % idx, file=f)
+			print("* <missing quote %d, ask CandiCat for it please>" % idx, file=f)
 		else:
 			print("* %d: %s" % (idx, convert_emotes(quote)), file=f)
 			m = re.search(r"-(\w+) \([0-9][0-9]-[A-Z][a-z][a-z]-[0-9][0-9]\)$", quote)
