@@ -15,6 +15,7 @@ def cache_all(channel):
 			headers={"Client-ID": keys.client_id, "Accept": "application/vnd.twitchtv.v5+json"})
 		r.raise_for_status()
 		channel = r.json()["data"][0]["id"]
+		print("Next time, it'd be faster to precache", channel)
 	url = "https://api.twitch.tv/kraken/channels/%s/videos?broadcast_type=archive&limit=100" % channel
 	while url:
 		r = requests.get(url, headers={"Client-ID": keys.client_id, "Accept": "application/vnd.twitchtv.v5+json"})
