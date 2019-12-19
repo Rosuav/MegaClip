@@ -25,7 +25,7 @@ def cache_all(channel):
 		for video in data["videos"]:
 			print("Ensuring cache of video", video["_id"][1:])
 			get_video_info(video["_id"][1:], verbose=True)
-		url = data["_links"]["next"]
+		url = data.get("_links", {}).get("next")
 
 if __name__ == "__main__":
 	import sys
