@@ -26,8 +26,10 @@ except (FileNotFoundError, json.decoder.JSONDecodeError): cache = {}
 quotes = cache.get("quotes", [])
 def cache_end(video):
 	if "saved" in cache: return # Ensure we save back only once
+	cache["cached_until"] = video
+	cache["quotes"] = quotes
 	with open(CACHE_FILE, "w") as f:
-		json.dump({"cached_until": video, "quotes": quotes}, f, sort_keys=True, indent=2)
+		json.dump(cache, f, sort_keys=True, indent=2)
 		f.write("\n") # json.dump doesn't put a final newline, but it's tidier with one
 	cache["saved"] = 1
 
@@ -99,6 +101,11 @@ by the faithful bot and the mod team. %s
 save_quotes(quotes, "quotes", """So far, %d quotes have been recorded. To
 see them in chat, ask the bot for a quote with the command `!quote N` for some
 number N.""" % (len(quotes) - 1))
+
+if "--all" in sys.argv:
+	for filename, desc in cache["sections"].items():
+		save_quotes(cache[filename], filename, desc + """, %d quotes were recorded. They cannot
+be seen in chat, but have been archived here with their original numbers.""" % (len(cache[filename]) - 1))
 
 if missing: print("Missing quotes %s" % ", ".join(map(str, missing)))
 else: print("Last quote:\n%d: %s" % (len(quotes)-1, quotes[-1]))
