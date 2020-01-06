@@ -25,8 +25,9 @@ try:
 except (FileNotFoundError, json.decoder.JSONDecodeError): cache = {}
 quotes = cache.get("quotes", [])
 def cache_end(video):
-	if "saved" in cache: return # Ensure we save back only once
-	cache["cached_until"] = video
+	# If we've already saved back once, don't update the cache-end tag
+	if "saved" in cache: del cache["saved"]
+	else: cache["cached_until"] = video
 	cache["quotes"] = quotes
 	with open(CACHE_FILE, "w") as f:
 		json.dump(cache, f, sort_keys=True, indent=2)
@@ -38,16 +39,14 @@ def find_quotes(video):
 	if "cached_until" in cache and video < cache["cached_until"]: return
 	info = megaclip.get_video_info(video, cache_only=True)
 	if info["metadata"]["channel"]["name"] not in {"devicat", "devi_cat"}: return
-	#if info["metadata"]["status"] == "recording":
+	if info["metadata"]["status"] == "recording":
 		# Retain cache of everything up to but not including any
 		# incomplete videos. Then next time, load that cache and skip
 		# everything up to but not including the cache marker.
 		# Note that the popularity stats are not cached. Keeping the
 		# cache file and discarding the actual chat logs will reset
 		# all quotes to zero and restart the popularity contest.
-		#cache_end(video)
-		# CJA 20200101: Not doing this any more. Hopefully the "+" mark
-		# will cover this.
+		cache_end(video)
 	print("Scanning video %s (%s)..." % (video, info["metadata"]["status"]))
 	for msg in info["comments"]:
 		if msg["commenter"]["name"] not in ("cutiecakebot", "candicat"): continue
