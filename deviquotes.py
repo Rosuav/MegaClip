@@ -109,10 +109,10 @@ be seen in chat, but have been archived here with their original numbers.""" % (
 if missing: print("Missing quotes %s" % ", ".join(map(str, missing)))
 else: print("Last quote:\n%d: %s" % (len(quotes)-1, quotes[-1]))
 print()
-print("Top ten quotes:")
-for idx, freq in popularity.most_common(10):
-	print("%d: %s" % (idx, quotes[idx]))
-print()
+# print("Top ten quotes:")
+# for idx, freq in popularity.most_common(10):
+	# print("%d: %s" % (idx, quotes[idx]))
+# print()
 print("Most quoted people:")
 for name, freq in most_quoted.most_common(10):
 	print("%d: %s" % (freq, name))
