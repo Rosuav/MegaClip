@@ -106,7 +106,7 @@ if "--all" in sys.argv:
 		save_quotes(cache[filename], filename, desc + """, %d quotes were recorded. They cannot
 be seen in chat, but have been archived here with their original numbers.""" % (len(cache[filename]) - 1))
 
-if missing: print("Missing quotes %s" % ", ".join(map(str, missing)))
+if missing: print("Missing quote(s) %s" % ", ".join(map(str, missing)))
 else: print("Last quote:\n%d: %s" % (len(quotes)-1, quotes[-1]))
 print()
 # print("Top ten quotes:")
