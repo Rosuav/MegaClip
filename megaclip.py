@@ -28,10 +28,10 @@ def get_video_info(video, *, verbose=False, cache_only=False):
 		# might fail).
 		import requests # ImportError? "python3 -m pip install requests"
 		import keys # ImportError? Look at keys_sample.py and follow the instructions.
-		r = requests.get("https://api.twitch.tv/helix/users", params={"login": video},
+		r = requests.get("https://api.twitch.tv/kraken/users", params={"login": video},
 			headers={"Client-ID": keys.client_id, "Accept": "application/vnd.twitchtv.v5+json"})
 		r.raise_for_status()
-		channel = r.json()["data"][0]["id"]
+		channel = r.json()["users"][0]["_id"]
 		r = requests.get("https://api.twitch.tv/kraken/channels/%s/videos?broadcast_type=archive&limit=1" %
 			channel, headers={"Client-ID": keys.client_id, "Accept": "application/vnd.twitchtv.v5+json"})
 		r.raise_for_status()
