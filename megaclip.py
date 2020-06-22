@@ -77,9 +77,7 @@ def get_video_info(video, *, verbose=False, cache_only=False):
 	# As of 20190203, it might be possible; metadata["seek_previews_url"] has the key
 	# information, but there are slightly different URLs depending on whether some of
 	# the VOD has been muted.
-	# CJA 2020606: This is breaking for some reason. For now, just block it; downloading
-	# chat will still work, but downloading the video itself won't.
-	# info["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
+	info["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
 	with open(CACHE_DIR + "/%s.json" % video, "w") as f:
 		json.dump(info, f)
 	if verbose:
