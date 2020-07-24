@@ -23,8 +23,10 @@ CACHE_FILE = "../devicatoutlet.github.io/_quotes.json"
 try:
 	with open(CACHE_FILE) as f: cache = json.load(f)
 except (FileNotFoundError, json.decoder.JSONDecodeError): cache = {}
-quotes = cache.get("quotes", [])
+quotes = cache.get("quotes", []); loadedquotes = list(quotes)
 def cache_end(video):
+	# If we haven't added/changed any quotes, don't bother updating the markers
+	if quotes == loadedquotes: return
 	# If we've already saved back once, don't update the cache-end tag
 	if "saved" in cache: del cache["saved"]
 	else: cache["cached_until"] = video
