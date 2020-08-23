@@ -71,7 +71,7 @@ most_quoted = collections.Counter()
 name_fold = {} # Map case-folded names to the first seen form; whatever we first see, we keep.
 name_fold["devi_cat"] = "DeviCat" # Fold some names together to gather renamed people
 name_fold["ciriion"] = "Ciri_Ion"
-for Erin in "derppicklejar dearpicklejar pickle pickledeggrin picklewash mydearestpickle".split():
+for Erin in "derppicklejar dearpicklejar pickle pickledeggrin picklewash mydearestpickle mydearpotato".split():
 	name_fold[Erin] = "Erin (various)"
 missing = []
 
