@@ -77,7 +77,10 @@ def get_video_info(video, *, verbose=False, cache_only=False):
 	# As of 20190203, it might be possible; metadata["seek_previews_url"] has the key
 	# information, but there are slightly different URLs depending on whether some of
 	# the VOD has been muted.
-	info["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
+	try:
+		info["m3u8"] = subprocess.check_output(["youtube-dl", "-g", "https://www.twitch.tv/videos/%s" % video]).decode("utf-8").strip()
+	except subprocess.CalledProcessError:
+		info["m3u8"] = ""
 	with open(CACHE_DIR + "/%s.json" % video, "w") as f:
 		json.dump(info, f)
 	if verbose:
