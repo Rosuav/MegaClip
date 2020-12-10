@@ -1,5 +1,6 @@
 import re
 import sys
+from collections import Counter
 import megaclip
 
 def search(video, *search_terms, cache_only=False, show_header=False):
@@ -20,7 +21,7 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 
 	search_terms = [term.casefold() for term in search_terms]
 
-	status = {}
+	status = {}; count = Counter()
 	for msg in info["comments"]:
 		for findme in search_terms:
 			if findme in msg["message"]["body"].casefold(): break
@@ -40,6 +41,9 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 					status[who] = badge
 					print(msg["commenter"]["display_name"], badge)
 				continue
+			if findme == "!active":
+				count[msg["commenter"]["display_name"]] += 1
+				continue
 		else:
 			continue # Not found? Don't display it.
 		if show_header:
@@ -58,6 +62,8 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 			print(tm, name, msg["message"]["body"])
 		else:
 			print(tm, name + ":", msg["message"]["body"])
+	for name, qty in count.most_common(25): # Will do nothing if you're not searching for '!active'
+		print("%4d %s" % (qty, name))
 
 if __name__ == "__main__":
 	if len(sys.argv) < 3:
