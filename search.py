@@ -44,6 +44,13 @@ def search(video, *search_terms, cache_only=False, show_header=False):
 			if findme == "!active":
 				count[msg["commenter"]["display_name"]] += 1
 				continue
+			if findme.startswith("emote!"):
+				for em in msg["message"].get("emoticons", ()):
+					name = msg["message"]["body"][em["begin"]:em["end"]+1]
+					if (name.startswith(findme.replace("emote!", "")) # eg "emote!2020" will find emotes that start "2020"
+							and name not in status):
+						print(name, em["_id"])
+						status[name] = 1
 		else:
 			continue # Not found? Don't display it.
 		if show_header:
