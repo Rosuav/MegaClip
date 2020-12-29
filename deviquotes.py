@@ -115,6 +115,6 @@ print()
 # for idx, freq in popularity.most_common(10):
 	# print("%d: %s" % (idx, quotes[idx]))
 # print()
-print("Most quoted people:")
-for name, freq in most_quoted.most_common(10):
-	print("%d: %s" % (freq, name))
+# print("Most quoted people:")
+# for name, freq in most_quoted.most_common(10):
+	# print("%d: %s" % (freq, name))
