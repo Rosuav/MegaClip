@@ -75,6 +75,9 @@ for Erin in "derppicklejar dearpicklejar pickle pickledeggrin picklewash mydeare
 	name_fold[Erin] = "Erin (various)"
 missing = []
 
+# TODO: Give better descriptions
+hyper_lynx = "\n".join("* [Quotes from %s](%s)" % (filename.replace("quotes", ""), filename) for filename in cache["sections"])
+
 def save_quotes(quotes, filename, desc):
 	with open("../devicatoutlet.github.io/%s.md" % filename, "w") as f:
 		print("""# Twitch Quotes
@@ -86,7 +89,9 @@ should not be edited manually. -->
 During live streams, funny things that people say can be recorded for posterity
 by the faithful bot and the mod team. %s
 
-""" % desc, file=f)
+%s
+* [Latest quotes](quotes)
+""" % (desc, hyper_lynx), file=f)
 		for idx, quote in enumerate(quotes):
 			if quote is None:
 				if not idx: continue # Ignore the shim
