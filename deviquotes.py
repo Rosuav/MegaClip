@@ -38,7 +38,7 @@ def cache_end(video):
 
 popularity = collections.Counter()
 def find_quotes(video):
-	if "cached_until" in cache and video < cache["cached_until"]: return
+	if "cached_until" in cache and float(video) < float(cache["cached_until"]): return
 	info = megaclip.get_video_info(video, cache_only=True)
 	if info["metadata"]["channel"]["name"] not in {"devicat", "devi_cat"}: return
 	if info["metadata"]["status"] == "recording":
@@ -60,9 +60,13 @@ def find_quotes(video):
 		quotes[idx] = m.group(2) # If a quote changes, retain the most recent version
 		popularity[idx] += 1
 
+# NOTE: This sorts textually, but they really ought to be sorted numerically.
+# This could mean that files get processed out of order when there's a digit
+# shift (1000 would be processed before 999), potentially resulting in wrong
+# conflict resolution. Otherwise it's all fine.
 for fn in sorted(os.listdir("cache")):
 	find_quotes(fn.replace(".json", ""))
-cache_end(fn.replace(".json", "") + "+") # If we haven't halted the cache, keep everything, and start scanning AFTER the last vid.
+cache_end(fn.replace(".json", "") + ".5") # If we haven't halted the cache, keep everything, and start scanning AFTER the last vid.
 
 assert quotes[0] is None # There should be no quote numbered 0
 assert quotes[-1] is not None #  ... and we should have slots only for what we use
